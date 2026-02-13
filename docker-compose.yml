@@ -1,0 +1,44 @@
+services:
+  backend:
+    build: 
+      context: .
+      dockerfile: backend.dockerfile
+    container_name: examen-backend
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+     - test_net
+  frontend:
+    build: 
+     context: .
+     dockerfile: frontend.dockerfile
+    container_name: examen-frontend
+    ports:
+      - "8000:80"  
+    depends_on:
+     - backend
+
+  mysql:
+    build:
+      context: .
+      dockerfile: sql.dockerfile
+    container_name: examen-mysql
+    environment:
+      MYSQL_DATABASE: schema
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql
+    networks:
+     - test_net
+networks:
+  test_net:
+
+
+volumes:
+  db_data:
+  
